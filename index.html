@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rail Savdhaan - Train Checker</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f3; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .app-container { background: white; width: 100%; max-width: 450px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: #00529b; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; text-align: center; }
+        input { width: 90%; padding: 15px; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; margin-bottom: 15px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #00529b; }
+        button { background: #ff9933; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; width: 95%; transition: 0.2s; }
+        button:active { transform: scale(0.98); }
+        #result-box { margin-top: 25px; padding: 20px; border-radius: 15px; display: none; text-align: left; animation: fadeIn 0.5s; }
+        .warning { background: #ffebee; border-left: 5px solid #d32f2f; color: #b71c1c; }
+        .safe { background: #e8f5e9; border-left: 5px solid #388e3c; color: #1b5e20; }
+        .info { background: #e3f2fd; border-left: 5px solid #1976d2; color: #0d47a1; }
+        h3 { margin: 0 0 10px 0; font-size: 22px; }
+        p { margin: 5px 0; line-height: 1.5; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>Rail Savdhaan 🇮🇳</h1>
+        <p>Train Category & Ticket Guide</p>
+    </div>
+
+    <div class="content">
+        <input type="number" id="trainInput" placeholder="5 Digit Train No. (e.g. 12951)" maxlength="5">
+        <button onclick="analyzeTrain()">Check Train Type</button>
+
+        <div id="result-box">
+            <h3 id="trainType">---</h3>
+            <p id="ticketAdvice"></p>
+            <p id="penaltyAlert" style="font-weight: bold; color: red;"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function analyzeTrain() {
+        let num = document.getElementById('trainInput').value;
+        let box = document.getElementById('result-box');
+        let typeText = document.getElementById('trainType');
+        let adviceText = document.getElementById('ticketAdvice');
+        let penaltyText = document.getElementById('penaltyAlert');
+
+        if (num.length < 5) {
+            alert("Kripya sahi 5-digit Train Number daalein!");
+            return;
+        }
+
+        box.style.display = "block";
+        penaltyText.innerText = ""; // Clear previous alerts
+
+        // --- Logic Database ---
+        // 12xxx, 22xxx, 20xxx are Superfast
+        if (num.startsWith('12') || num.startsWith('22') || num.startsWith('20')) {
+            box.className = "warning";
+            typeText.innerText = "🚨 SUPERFAST TRAIN";
+            adviceText.innerText = "Is train mein safar karne ke liye 'Superfast Charge' wala ticket hona zaroori hai.";
+            penaltyText.innerText = "⚠️ SAVDHAAN: Ordinary (General) ticket par 250/- + antar ka fine lag sakta hai!";
+        } 
+        // 1xxxx, 2xxxx (other than SF) are Mail/Express
+        else if (num.startsWith('1') || num.startsWith('2')) {
+            box.className = "info";
+            typeText.innerText = "🚆 MAIL / EXPRESS";
+            adviceText.innerText = "Isme Express ticket valid hai. Yeh Superfast se thodi dhimi hoti hai.";
+            penaltyText.innerText = "";
+        }
+        // 0xxxx (Special), 5xxxx, 6xxxx, 7xxxx (Passenger/MEMU)
+        else if (num.startsWith('0') || num.startsWith('5') || num.startsWith('6') || num.startsWith('7')) {
+            box.className = "safe";
+            typeText.innerText = "🐢 PASSENGER / ORDINARY";
+            adviceText.innerText = "Aap sasta 'Ordinary/General' ticket lekar isme baith sakte hain.";
+            penaltyText.innerText = "✅ No Extra Charge.";
+        }
+        else {
+            box.className = "info";
+            typeText.innerText = "❓ UNKNOWN CATEGORY";
+            adviceText.innerText = "System ko is train ki jaankari nahi mili. Kripya counter se confirm karein.";
+        }
+    }
+</script>
+
+</body>
+</html>
